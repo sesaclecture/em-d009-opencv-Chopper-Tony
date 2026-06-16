@@ -1,0 +1,80 @@
+name: Autograding Tests
+
+on:
+  push:
+  repository_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: test_convert_to_gray
+        id: test-convert-to-gray
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_convert_to_gray
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_convert_to_gray
+          timeout: 10
+          max-score: 2
+
+      - name: test_resize_image
+        id: test-resize-image
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_resize_image
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_resize_image
+          timeout: 10
+          max-score: 2
+
+      - name: test_apply_threshold
+        id: test-apply-threshold
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_apply_threshold
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_apply_threshold
+          timeout: 10
+          max-score: 2
+
+      - name: test_count_red_pixels
+        id: test-count-red-pixels
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_count_red_pixels
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_count_red_pixels
+          timeout: 10
+          max-score: 2
+
+      - name: test_find_object_center
+        id: test-find-object-center
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: test_find_object_center
+          setup-command: pip install pytest opencv-python
+          command: python -m pytest tests/test_main.py::test_find_object_center
+          timeout: 10
+          max-score: 2
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          TEST-CONVERT-TO-GRAY_RESULTS: "${{ steps.test-convert-to-gray.outputs.result }}"
+          TEST-RESIZE-IMAGE_RESULTS: "${{ steps.test-resize-image.outputs.result }}"
+          TEST-APPLY-THRESHOLD_RESULTS: "${{ steps.test-apply-threshold.outputs.result }}"
+          TEST-COUNT-RED-PIXELS_RESULTS: "${{ steps.test-count-red-pixels.outputs.result }}"
+          TEST-FIND-OBJECT-CENTER_RESULTS: "${{ steps.test-find-object-center.outputs.result }}"
+        with:
+          runners: test-convert-to-gray,test-resize-image,test-apply-threshold,test-count-red-pixels,test-find-object-center
